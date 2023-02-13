@@ -1,11 +1,9 @@
-现在机场大多数使用的是Dnsmasq将网站解析劫持到SNI proxy反向代理的页面上。
-
-这里是使用WARP Client进行代理解锁Netflix等。
-可以去cloudfalre官方页面有详细的安装流程和原理，不赘述。
-个人认为官方socks这种代理方式更灵活且优雅。
+使用Cloudflare WARP进行代理，解锁openai等服务。
+Cloudfalre官方页面有详细的安装流程和原理，不赘述。
 https://developers.cloudflare.com/warp-client/setting-up/linux
 
-这里写下我的配置过程
+这里写下linux机器的配置过程
+注：以下过程是在v2ray/xray的服务器上操作，而不是在自己的机器上。
 
 1.注册客户端
 ```
@@ -29,10 +27,13 @@ warp-cli enable-always-on
 export ALL_PROXY=socks5://127.0.0.1:40000
 curl ifconfig.me
 ```
-7.修改v2ray/xray outbounds和分流规则，这里给出我的配置可自由发挥。
+7.修改v2ray/xray outbounds和分流规则，这里可以参考以下配置可自由发挥。
+~ 建议在修改配置前对原有配置文件进行.bak备份。 ~
 ```
-vim /usr/local/etc/xray/config.json
+vim /usr/local/etc/v2ray/config.json
 ```
+这是v2ray或者xray的配置文件，如果你的用户是root，那么它可能在/etc/v2ray/config.json
+
 inbounds要启动sniffing
 ```
 "sniffing": {
@@ -64,7 +65,10 @@ inbounds要启动sniffing
             {
                 "type": "field",
                 "outboundTag": "socks_out",
-                "domain": ["geosite:netflix"]
+                "domain": [
+                    "example.com",
+                    "example.com"
+                    ]
             },
             {
                 "type": "field",
@@ -74,6 +78,9 @@ inbounds要启动sniffing
         ]
     }
 ```
+请将`example.com`替换为你想要解锁访问的网站，例如访问chatGPT需要的：`openai.com`和`hcaptcha.com`。
+
+
 8.重新启动v2ray/xray
 ```
 systemctl restart v2ray/xray
