@@ -25,6 +25,7 @@ warp-cli enable-always-on
 6.测试socks代，理检查ip是否改变
 ```
 export ALL_PROXY=socks5://127.0.0.1:40000
+在 /etc/environment 环境变量文件追加写入 `ALL_PROXY=socks5://127.0.0.1:40000` 可以保证服务器重启后依然有效
 curl ifconfig.me
 ```
 7.修改v2ray/xray outbounds和分流规则，这里可以参考以下配置可自由发挥。
